@@ -61,9 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _showAddCategoryDialog() {
-  // Создайте контроллер для TextField
-  final TextEditingController _controller = TextEditingController();
+  void _showAddCategoryDialog() { 
+  final TextEditingController controller = TextEditingController();
   showDialog<String>(
     context: context,
     builder: (BuildContext context) {
@@ -72,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return AlertDialog(
             title: const Text('Добавить новую категорию'),
             content: TextField(
-              controller: _controller,
+              controller: controller,
               onChanged: (value) {
                 setState(() {});
               },
@@ -86,10 +85,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Отмена'),
               ),
               TextButton(
-                onPressed: _controller.text.trim().isEmpty 
+                onPressed: controller.text.trim().isEmpty 
                     ? null
                     : () {
-                        _addCategory(_controller.text.trim()); 
+                        _addCategory(controller.text.trim()); 
                         Navigator.pop(context, 'OK');
                       },
                 child: const Text('Добавить'),
@@ -107,6 +106,48 @@ class _MyHomePageState extends State<MyHomePage> {
       _categories.removeWhere((category) => category.id == id);
     });
   }
+
+Future<void> _showEditCategoryDialog(Category category) async {
+  final TextEditingController editController = TextEditingController(text: category.name);
+  
+  final String? result = await showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Редактировать категорию'),
+        content: TextField(
+          controller: editController,
+          autofocus: true,
+          maxLength: 40,
+          decoration: const InputDecoration(hintText: "Название категории"),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: editController.text.trim().isEmpty
+                ? null 
+                : () {
+                    Navigator.pop(context, 'updated');
+                  },
+            child: const Text('Сохранить'),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (result == 'updated') {
+    setState(() {
+      int index = _categories.indexWhere((cat) => cat.id == category.id);
+      if (index != -1) {
+        _categories[index].name = editController.text.trim();
+      }
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -138,15 +179,31 @@ class _MyHomePageState extends State<MyHomePage> {
                       final category = _categories[index];
                       return Dismissible(
                         key: Key(category.id),
-                        onDismissed: (_) => _removeCategory(category.id),
-                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) {
+                          if (direction == DismissDirection.endToStart) {
+                            _removeCategory(category.id); 
+                          }
+                        },
+                        confirmDismiss: (direction) async {
+                          if (direction == DismissDirection.startToEnd) {
+                            await _showEditCategoryDialog(category); 
+                            return false; 
+                          }
+                          return true;
+                        },
                         background: Container(
+                          color: Colors.yellow,
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: const Icon(Icons.edit, color: Colors.white),
+                        ),
+                        secondaryBackground: Container(
                           color: Colors.red,
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 20.0),
-                        
                           child: const Icon(Icons.delete, color: Colors.white),
                         ),
+                        direction: DismissDirection.horizontal,
                         child: Card(
                           margin: const EdgeInsets.only(left: 10, right: 10),
                           shape: RoundedRectangleBorder(
