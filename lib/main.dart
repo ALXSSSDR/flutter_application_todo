@@ -62,36 +62,45 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _showAddCategoryDialog() {
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        String categoryName = '';
-        return AlertDialog(
-          title: const Text('Добавить новую категорию'),
-          content: TextField(
-            onChanged: (value) {
-              categoryName = value;
-            },
-            autofocus: true,
-            decoration: const InputDecoration(hintText: "Название категории"),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'Cancel'),
-              child: const Text('Отмена'),
-            ),
-            TextButton(
-              onPressed: () {
-                _addCategory(categoryName);
-                Navigator.pop(context, 'OK');
+  // Создайте контроллер для TextField
+  final TextEditingController _controller = TextEditingController();
+  showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder( 
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Добавить новую категорию'),
+            content: TextField(
+              controller: _controller,
+              onChanged: (value) {
+                setState(() {});
               },
-              child: const Text('Добавить'),
+              autofocus: true,
+              maxLength: 40, 
+              decoration: const InputDecoration(hintText: "Название категории"),
             ),
-          ],
-        );
-      },
-    );
-  }
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Отмена'),
+              ),
+              TextButton(
+                onPressed: _controller.text.trim().isEmpty 
+                    ? null
+                    : () {
+                        _addCategory(_controller.text.trim()); 
+                        Navigator.pop(context, 'OK');
+                      },
+                child: const Text('Добавить'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
 
   void _removeCategory(String id) {
     setState(() {
