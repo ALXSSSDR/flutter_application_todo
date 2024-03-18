@@ -6,7 +6,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  // ignore: use_key_in_widget_constructors
+  const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +38,14 @@ class Task {
   String title;
   bool isCompleted;
   bool isFavourite;
+  String categoryId;
 
-  Task({required this.id, required this.title, this.isCompleted = false, this.isFavourite = false});
+  Task({required this.id, required this.title, required this.categoryId, this.isCompleted = false, this.isFavourite = false});
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  // ignore: use_key_in_widget_constructors
+  const MyHomePage({Key? key, required this.title});
   final String title;
 
   @override
@@ -61,45 +64,45 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _showAddCategoryDialog() { 
-  final TextEditingController controller = TextEditingController();
-  showDialog<String>(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder( 
-        builder: (context, setState) {
-          return AlertDialog(
-            title: const Text('Добавить новую категорию'),
-            content: TextField(
-              controller: controller,
-              onChanged: (value) {
-                setState(() {});
-              },
-              autofocus: true,
-              maxLength: 40, 
-              decoration: const InputDecoration(hintText: "Название категории"),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'Cancel'),
-                child: const Text('Отмена'),
+  void _showAddCategoryDialog() {
+    final TextEditingController controller = TextEditingController();
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Добавить новую категорию'),
+              content: TextField(
+                controller: controller,
+                onChanged: (value) {
+                  setState(() {});
+                },
+                autofocus: true,
+                maxLength: 40,
+                decoration: const InputDecoration(hintText: "Название категории"),
               ),
-              TextButton(
-                onPressed: controller.text.trim().isEmpty 
-                    ? null
-                    : () {
-                        _addCategory(controller.text.trim()); 
-                        Navigator.pop(context, 'OK');
-                      },
-                child: const Text('Добавить'),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                  child: const Text('Отмена'),
+                ),
+                TextButton(
+                  onPressed: controller.text.trim().isEmpty
+                      ? null
+                      : () {
+                          _addCategory(controller.text.trim());
+                          Navigator.pop(context, 'OK');
+                        },
+                  child: const Text('Добавить'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   void _removeCategory(String id) {
     setState(() {
@@ -107,47 +110,47 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-Future<void> _showEditCategoryDialog(Category category) async {
-  final TextEditingController editController = TextEditingController(text: category.name);
-  
-  final String? result = await showDialog<String>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Редактировать категорию'),
-        content: TextField(
-          controller: editController,
-          autofocus: true,
-          maxLength: 40,
-          decoration: const InputDecoration(hintText: "Название категории"),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
-          ),
-          TextButton(
-            onPressed: editController.text.trim().isEmpty
-                ? null 
-                : () {
-                    Navigator.pop(context, 'updated');
-                  },
-            child: const Text('Сохранить'),
-          ),
-        ],
-      );
-    },
-  );
+  Future<void> _showEditCategoryDialog(Category category) async {
+    final TextEditingController editController = TextEditingController(text: category.name);
 
-  if (result == 'updated') {
-    setState(() {
-      int index = _categories.indexWhere((cat) => cat.id == category.id);
-      if (index != -1) {
-        _categories[index].name = editController.text.trim();
-      }
-    });
+    final String? result = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Редактировать категорию'),
+          content: TextField(
+            controller: editController,
+            autofocus: true,
+            maxLength: 40,
+            decoration: const InputDecoration(hintText: "Название категории"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: editController.text.trim().isEmpty
+                  ? null
+                  : () {
+                      Navigator.pop(context, 'updated');
+                    },
+              child: const Text('Сохранить'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == 'updated') {
+      setState(() {
+        int index = _categories.indexWhere((cat) => cat.id == category.id);
+        if (index != -1) {
+          _categories[index].name = editController.text.trim();
+        }
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -157,9 +160,7 @@ Future<void> _showEditCategoryDialog(Category category) async {
       ),
       body: _categories.isEmpty
           ? const Center(
-              child: Text("Список категорий пуст",
-                style: TextStyle(fontSize: 18),
-              ),
+              child: Text("Список категорий пуст", style: TextStyle(fontSize: 18)),
             )
           : Column(
               children: [
@@ -172,7 +173,6 @@ Future<void> _showEditCategoryDialog(Category category) async {
                   ),
                 ),
                 Expanded(
-                  
                   child: ListView.builder(
                     itemCount: _categories.length,
                     itemBuilder: (context, index) {
@@ -181,13 +181,13 @@ Future<void> _showEditCategoryDialog(Category category) async {
                         key: Key(category.id),
                         onDismissed: (direction) {
                           if (direction == DismissDirection.endToStart) {
-                            _removeCategory(category.id); 
+                            _removeCategory(category.id);
                           }
                         },
                         confirmDismiss: (direction) async {
                           if (direction == DismissDirection.startToEnd) {
-                            await _showEditCategoryDialog(category); 
-                            return false; 
+                            await _showEditCategoryDialog(category);
+                            return false;
                           }
                           return true;
                         },
@@ -205,14 +205,14 @@ Future<void> _showEditCategoryDialog(Category category) async {
                         ),
                         direction: DismissDirection.horizontal,
                         child: Card(
-                          margin: const EdgeInsets.only(left: 10, right: 10),
+                          margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0), 
+                            borderRadius: BorderRadius.circular(5.0),
                           ),
                           child: ListTile(
                             title: Text(category.name),
                             onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => TasksPage(categoryName: category.name, tasks: _tasks)));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => TasksPage(categoryName: category.name, categoryId: category.id, tasks: _tasks)));
                             },
                           ),
                         ),
@@ -232,12 +232,12 @@ Future<void> _showEditCategoryDialog(Category category) async {
   }
 }
 
-
 // ignore: must_be_immutable
 class TasksPage extends StatefulWidget {
   final String categoryName;
+  final String categoryId;
   List<Task> tasks;
-  TasksPage({super.key, required this.categoryName, required this.tasks});
+  TasksPage({Key? key, required this.categoryName, required this.categoryId, required this.tasks});
 
   @override
   State<TasksPage> createState() => _TasksPageState();
@@ -249,30 +249,30 @@ class _TasksPageState extends State<TasksPage> {
   List<Task> get _filteredTasks {
     switch (_filterType) {
       case "Завершенные":
-        return widget.tasks.where((task) => task.isCompleted).toList();
+        return widget.tasks.where((task) => task.categoryId == widget.categoryId && task.isCompleted).toList();
       case "Незавершенные":
-        return widget.tasks.where((task) => !task.isCompleted).toList();
+        return widget.tasks.where((task) => task.categoryId == widget.categoryId && !task.isCompleted).toList();
       case "Избранные":
-        return widget.tasks.where((task) => task.isFavourite).toList();
+        return widget.tasks.where((task) => task.categoryId == widget.categoryId && task.isFavourite).toList();
       default:
-        return widget.tasks;
+        return widget.tasks.where((task) => task.categoryId == widget.categoryId).toList();
     }
   }
 
   void _addTask(String taskTitle) {
     const uuid = Uuid();
-    final newTask = Task(id: uuid.v4(), title: taskTitle);
+    final newTask = Task(id: uuid.v4(), title: taskTitle, categoryId: widget.categoryId);
     setState(() {
       widget.tasks.add(newTask);
     });
   }
-  
+
   void _toggleTaskCompletion(Task task) {
     setState(() {
       task.isCompleted = !task.isCompleted;
     });
   }
-  
+
   void _toggleTaskFavourite(Task task) {
     setState(() {
       task.isFavourite = !task.isFavourite;
@@ -345,10 +345,10 @@ class _TasksPageState extends State<TasksPage> {
       body: _filteredTasks.isEmpty
           ? const Center(
               child: Text('Пока что у вас нет задач'),
-            ) : 
-          Column(
+            )
+          : Column(
               children: [
-                 Padding(
+                Padding(
                   padding: const EdgeInsets.all(9.0),
                   child: Text(
                     '$_filterType задачи',
@@ -356,42 +356,41 @@ class _TasksPageState extends State<TasksPage> {
                     textAlign: TextAlign.left,
                   ),
                 ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _filteredTasks.length,
-              itemBuilder: (context, index) {
-                final task = _filteredTasks[index];
-                return Dismissible(
-                  key: Key(task.id),
-                  onDismissed: (_) => _removeTask(task.id),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: const Icon(Icons.delete, color: Colors.white),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _filteredTasks.length,
+                    itemBuilder: (context, index) {
+                      final task = _filteredTasks[index];
+                      return Dismissible(
+                        key: Key(task.id),
+                        onDismissed: (_) => _removeTask(task.id),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        child: Card(
+                          margin: const EdgeInsets.only(left: 10, right: 10),
+                          child: ListTile(
+                            title: Text(task.title),
+                            leading: IconButton(
+                              icon: Icon(task.isCompleted ? Icons.check_box : Icons.check_box_outline_blank),
+                              onPressed: () => _toggleTaskCompletion(task),
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(task.isFavourite ? Icons.star : Icons.star_border, color: Colors.yellow[700]),
+                              onPressed: () => _toggleTaskFavourite(task),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  child: Card(
-                    margin: const EdgeInsets.only(left: 10, right: 10),
-                    child: ListTile(
-                      title: Text(task.title),
-                      leading: IconButton(
-                        icon: Icon(task.isCompleted ? Icons.check_box : Icons.check_box_outline_blank),
-                        onPressed: () => _toggleTaskCompletion(task),
-                      ),
-                      trailing: IconButton(
-                        icon: Icon(task.isFavourite ? Icons.star : Icons.star_border, color: Colors.yellow[700]),
-                        onPressed: () => _toggleTaskFavourite(task),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-            ),
+                ),
               ],
-          ),
-          
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddTaskDialog,
         tooltip: 'Добавить задачу',
