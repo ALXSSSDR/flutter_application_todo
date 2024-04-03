@@ -4,6 +4,14 @@ class Task {
   bool isCompleted;
   bool isFavourite;
   String categoryId;
+  String description;
 
-  Task({required this.id, required this.title, required this.categoryId, this.isCompleted = false, this.isFavourite = false});
+  Task({
+    required this.id,
+    required this.title,
+    required this.categoryId,
+    this.isCompleted = false,
+    this.isFavourite = false,
+    this.description = "", 
+  });
 }
