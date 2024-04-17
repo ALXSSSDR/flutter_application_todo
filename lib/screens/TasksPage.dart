@@ -6,8 +6,8 @@ import 'TaskDetailPage.dart';
 class TasksPage extends StatefulWidget {
   final String categoryName;
   final String categoryId;
-  List<Task> tasks;
-  TasksPage({Key? key, required this.categoryName, required this.categoryId, required this.tasks});
+  final List<Task> tasks;
+  const TasksPage({Key? key, required this.categoryName, required this.categoryId, required this.tasks});
 
   @override
   State<TasksPage> createState() => _TasksPageState();
@@ -37,7 +37,7 @@ class _TasksPageState extends State<TasksPage> {
   }
 
   void _addTask(String taskTitle) {
-    final uuid = Uuid();
+    const uuid = Uuid();
     final newTask = Task(id: uuid.v4(), title: taskTitle, categoryId: widget.categoryId);
     setState(() {
       widget.tasks.add(newTask);
@@ -98,7 +98,7 @@ class _TasksPageState extends State<TasksPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Task> _filteredTasks = widget.tasks.where((task) {
+    List<Task> filteredTasks = widget.tasks.where((task) {
       switch (_filterType) {
         case "Завершенные":
           return task.categoryId == widget.categoryId && task.isCompleted;
@@ -132,7 +132,7 @@ class _TasksPageState extends State<TasksPage> {
           ),
         ],
       ),
-      body: _filteredTasks.isEmpty
+      body: filteredTasks.isEmpty
           ? const Center(
               child: Text('Пока что у вас нет задач'),
             )
@@ -148,11 +148,13 @@ class _TasksPageState extends State<TasksPage> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _filteredTasks.length,
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                    itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
-                      final task = _filteredTasks[index];
+                      final task = filteredTasks[index];
                       return Dismissible(
                         key: Key(task.id),
+                        direction: DismissDirection.endToStart,
                         onDismissed: (direction) {
                           if (direction == DismissDirection.endToStart) {
                             _removeTask(task.id);
@@ -160,12 +162,17 @@ class _TasksPageState extends State<TasksPage> {
                         },
                         background: Container(
                           color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: const Icon(Icons.delete, color: Colors.white),
+                          margin: const EdgeInsets.only(top: 10),
+                          child: const Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Icon(Icons.delete, color: Colors.white),
+                            ),
+                          ),
                         ),
                         child: Card(
-                          margin: const EdgeInsets.only(left: 10, right: 10),
+                          margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
                           child: ListTile(
                             title: Text(task.title),
                             leading: IconButton(

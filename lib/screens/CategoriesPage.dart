@@ -154,12 +154,14 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         },
                         background: Container(
                           color: Colors.yellow,
+                          margin: const EdgeInsets.only(top: 10),
                           alignment: Alignment.centerLeft,
                           padding: const EdgeInsets.only(left: 20.0),
                           child: const Icon(Icons.edit, color: Colors.white),
                         ),
                         secondaryBackground: Container(
                           color: Colors.red,
+                          margin: const EdgeInsets.only(top: 10),
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 20.0),
                           child: const Icon(Icons.delete, color: Colors.white),
