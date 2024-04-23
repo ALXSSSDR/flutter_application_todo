@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../models/task.dart';
+import 'TaskDetailPage.dart';
 
 class TasksPage extends StatefulWidget {
   final String categoryName;
   final String categoryId;
-  List<Task> tasks;
-  TasksPage({Key? key, required this.categoryName, required this.categoryId, required this.tasks});
+  final List<Task> tasks;
+  const TasksPage({Key? key, required this.categoryName, required this.categoryId, required this.tasks});
 
   @override
   State<TasksPage> createState() => _TasksPageState();
@@ -15,17 +16,24 @@ class TasksPage extends StatefulWidget {
 class _TasksPageState extends State<TasksPage> {
   String _filterType = "Все";
 
-  List<Task> get _filteredTasks {
-    switch (_filterType) {
-      case "Завершенные":
-        return widget.tasks.where((task) => task.categoryId == widget.categoryId && task.isCompleted).toList();
-      case "Незавершенные":
-        return widget.tasks.where((task) => task.categoryId == widget.categoryId && !task.isCompleted).toList();
-      case "Избранные":
-        return widget.tasks.where((task) => task.categoryId == widget.categoryId && task.isFavourite).toList();
-      default:
-        return widget.tasks.where((task) => task.categoryId == widget.categoryId).toList();
-    }
+  void _showTaskDetailPage(Task task) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TaskDetailPage(
+        task: task,
+        onTaskDeleted: (deletedTask) {
+          setState(() {
+            widget.tasks.removeWhere((t) => t.id == deletedTask.id); 
+          });
+        },
+        onTaskSaved: (updatedTask) {
+          int index = widget.tasks.indexWhere((t) => t.id == updatedTask.id); 
+          setState(() {
+            widget.tasks[index] = updatedTask; 
+          });
+        },
+      )),
+    );
   }
 
   void _addTask(String taskTitle) {
@@ -90,6 +98,19 @@ class _TasksPageState extends State<TasksPage> {
 
   @override
   Widget build(BuildContext context) {
+    List<Task> filteredTasks = widget.tasks.where((task) {
+      switch (_filterType) {
+        case "Завершенные":
+          return task.categoryId == widget.categoryId && task.isCompleted;
+        case "Незавершенные":
+          return task.categoryId == widget.categoryId && !task.isCompleted;
+        case "Избранные":
+          return task.categoryId == widget.categoryId && task.isFavourite;
+        default:
+          return task.categoryId == widget.categoryId;
+      }
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.categoryName),
@@ -111,7 +132,7 @@ class _TasksPageState extends State<TasksPage> {
           ),
         ],
       ),
-      body: _filteredTasks.isEmpty
+      body: filteredTasks.isEmpty
           ? const Center(
               child: Text('Пока что у вас нет задач'),
             )
@@ -127,21 +148,31 @@ class _TasksPageState extends State<TasksPage> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _filteredTasks.length,
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+                    itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
-                      final task = _filteredTasks[index];
+                      final task = filteredTasks[index];
                       return Dismissible(
                         key: Key(task.id),
-                        onDismissed: (_) => _removeTask(task.id),
                         direction: DismissDirection.endToStart,
+                        onDismissed: (direction) {
+                          if (direction == DismissDirection.endToStart) {
+                            _removeTask(task.id);
+                          }
+                        },
                         background: Container(
                           color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: const Icon(Icons.delete, color: Colors.white),
+                          margin: const EdgeInsets.only(top: 10),
+                          child: const Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Icon(Icons.delete, color: Colors.white),
+                            ),
+                          ),
                         ),
                         child: Card(
-                          margin: const EdgeInsets.only(left: 10, right: 10),
+                          margin: const EdgeInsets.only(left: 10, right: 10, top: 10),
                           child: ListTile(
                             title: Text(task.title),
                             leading: IconButton(
@@ -152,6 +183,7 @@ class _TasksPageState extends State<TasksPage> {
                               icon: Icon(task.isFavourite ? Icons.star : Icons.star_border, color: Colors.yellow[700]),
                               onPressed: () => _toggleTaskFavourite(task),
                             ),
+                            onTap: () => _showTaskDetailPage(task), 
                           ),
                         ),
                       );
