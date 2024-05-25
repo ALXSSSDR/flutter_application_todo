@@ -24,8 +24,8 @@ class CategoryAddBloc extends Cubit<CategoryAddState> {
         return false;
       }
       await _addCategoryUseCase.execute(newCategoryName);
-      
       await _getCategoriesUseCase.execute();
+      emit(const Input());
       
     } catch (e) {
       emit(Error(msg: e.toString()));

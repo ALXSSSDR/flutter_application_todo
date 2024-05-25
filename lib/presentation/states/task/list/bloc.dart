@@ -1,41 +1,70 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_1/domain/entities/task.dart';
-import 'package:flutter_application_1/domain/usecases/task.dart';
+import 'package:flutter_application_1/domain/usecases/get_tasks.dart';
+import 'package:flutter_application_1/domain/usecases/get_task.dart';
+import 'package:flutter_application_1/domain/usecases/remove_task.dart';
+import 'package:flutter_application_1/domain/usecases/complete_task.dart';
+import 'package:flutter_application_1/domain/usecases/favour_task.dart';
 import 'state.dart';
 
 class TaskListBloc extends Cubit<TaskListState> {
-  final TaskUseCase _taskUseCase;
+  final GetTasksUseCase _getTasksUseCase;
+  final GetTaskUseCase _getTaskUseCase;
+  final RemoveTaskUseCase _removeTaskUseCase;
+  final CompleteTaskUseCase _completeTaskUseCase;
+  final FavourTaskUseCase _favourTaskUseCase;
 
-  TaskListBloc(this._taskUseCase) : super(const Loading());
+  TaskListBloc(
+    this._getTasksUseCase,
+    this._getTaskUseCase,
+    this._removeTaskUseCase,
+    this._completeTaskUseCase,
+    this._favourTaskUseCase,
+  ) : super(const Loading());
 
   Future<void> refresh(String categoryId) async {
     emit(const Loading());
 
-    final data = await _taskUseCase.getTasks(categoryId);
-
-    emit(Data(data: data));
+    try {
+      final data = await _getTasksUseCase.execute(categoryId);
+      emit(Data(data: data));
+    } catch (e) {
+      emit(Error(msg: e.toString()));
+    }
   }
 
   Future<bool> removeTask(String taskId) async {
     try {
-      final TaskEntity task = await _taskUseCase.getTask(taskId);
+      final TaskEntity task = await _getTaskUseCase.execute(taskId);
 
-      await _taskUseCase.removeTask(task.id);
+      await _removeTaskUseCase.execute(task.id);
 
-      refresh(task.categoryId);
+      await refresh(task.categoryId);
     } catch (e) {
       emit(Error(msg: e.toString()));
-      return true;
+      return false;
     }
 
     return true;
   }
 
   Future<void> favourTask(String taskId, bool isFavourite) async {
-    await _taskUseCase.favourTask(taskId, isFavourite);
+    try {
+      await _favourTaskUseCase.execute(taskId, isFavourite);
+      final task = await _getTaskUseCase.execute(taskId);
+      await refresh(task.categoryId);
+    } catch (e) {
+      emit(Error(msg: e.toString()));
+    }
   }
 
   Future<void> completeTask(String taskId, bool isCompleted) async {
-    await _taskUseCase.completeTask(taskId, isCompleted);
+    try {
+      await _completeTaskUseCase.execute(taskId, isCompleted);
+      final task = await _getTaskUseCase.execute(taskId);
+      await refresh(task.categoryId);
+    } catch (e) {
+      emit(Error(msg: e.toString()));
+    }
   }
 }

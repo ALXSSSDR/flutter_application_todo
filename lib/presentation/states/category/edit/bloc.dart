@@ -20,7 +20,7 @@ class CategoryEditBloc extends Cubit<CategoryEditState> {
     required String oldCategoryName,
   }) async {
     try {
-      emit(const Input());
+      emit(const Loading());
 
       if (!await _isValidCategoryNameUseCase.execute(newCategoryName)) {
         emit(const Error(msg: 'Такая категория уже существует'));
@@ -32,7 +32,8 @@ class CategoryEditBloc extends Cubit<CategoryEditState> {
         return false;
       }
 
-      await _categoryListBloc.refresh(); // Обновление списка категорий
+      await _categoryListBloc.refresh();
+      emit(const Success());
     } catch (e) {
       emit(Error(msg: e.toString()));
       return false;
@@ -42,6 +43,8 @@ class CategoryEditBloc extends Cubit<CategoryEditState> {
   }
 
   Future<void> refresh() async {
+    emit(const Loading());
+    // Здесь вы можете добавить логику для обновления состояния блока, если это необходимо.
     emit(const Input());
   }
 }

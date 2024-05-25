@@ -1,6 +1,6 @@
+import 'package:flutter_application_1/data/mappers/category.dart';
 import 'package:flutter_application_1/domain/entities/category.dart';
 import 'package:flutter_application_1/domain/repository/category.dart';
-import 'package:flutter_application_1/data/mappers/category.dart';
 import 'package:uuid/uuid.dart';
 
 class AddCategoryUseCase {

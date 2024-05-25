@@ -7,7 +7,13 @@ import 'package:flutter_application_1/domain/usecases/get_categories.dart';
 import 'package:flutter_application_1/domain/usecases/is_valid_category_name.dart';
 import 'package:flutter_application_1/domain/usecases/remove_category.dart';
 import 'package:flutter_application_1/domain/usecases/filter.dart';
-import 'package:flutter_application_1/domain/usecases/task.dart';
+import 'package:flutter_application_1/domain/usecases/add_task.dart';
+import 'package:flutter_application_1/domain/usecases/edit_task.dart';
+import 'package:flutter_application_1/domain/usecases/get_task.dart';
+import 'package:flutter_application_1/domain/usecases/get_tasks.dart';
+import 'package:flutter_application_1/domain/usecases/remove_task.dart';
+import 'package:flutter_application_1/domain/usecases/complete_task.dart';
+import 'package:flutter_application_1/domain/usecases/favour_task.dart';
 import 'package:flutter_application_1/presentation/states/category/add/bloc.dart';
 import 'package:flutter_application_1/presentation/states/category/edit/bloc.dart';
 import 'package:flutter_application_1/presentation/states/category/list/bloc.dart';
@@ -48,17 +54,55 @@ final editCategoryUseCaseProvider = Provider<EditCategoryUseCase>(
   ),
 );
 
-final filterUseCaseProvider = Provider(
+final filterUseCaseProvider = Provider<FilterUseCase>(
   (ref) => FilterUseCase(
     filterRepository: ref.watch(filterRepositoryProvider),
   ),
 );
 
-final taskUseCaseProvider = Provider(
-  (ref) => TaskUseCase(
+final addTaskUseCaseProvider = Provider<AddTaskUseCase>(
+  (ref) => AddTaskUseCase(
     taskRepository: ref.watch(taskRepositoryProvider),
     taskMapper: ref.watch(taskMapperProvider),
+  ),
+);
+
+final editTaskUseCaseProvider = Provider<EditTaskUseCase>(
+  (ref) => EditTaskUseCase(
+    taskRepository: ref.watch(taskRepositoryProvider),
+  ),
+);
+
+final getTaskUseCaseProvider = Provider<GetTaskUseCase>(
+  (ref) => GetTaskUseCase(
+    taskRepository: ref.watch(taskRepositoryProvider),
+    taskMapper: ref.watch(taskMapperProvider),
+  ),
+);
+
+final getTasksUseCaseProvider = Provider<GetTasksUseCase>(
+  (ref) => GetTasksUseCase(
     filterUseCase: ref.watch(filterUseCaseProvider),
+    taskRepository: ref.watch(taskRepositoryProvider),
+    taskMapper: ref.watch(taskMapperProvider),
+  ),
+);
+
+final removeTaskUseCaseProvider = Provider<RemoveTaskUseCase>(
+  (ref) => RemoveTaskUseCase(
+    taskRepository: ref.watch(taskRepositoryProvider),
+  ),
+);
+
+final completeTaskUseCaseProvider = Provider<CompleteTaskUseCase>(
+  (ref) => CompleteTaskUseCase(
+    taskRepository: ref.watch(taskRepositoryProvider),
+  ),
+);
+
+final favourTaskUseCaseProvider = Provider<FavourTaskUseCase>(
+  (ref) => FavourTaskUseCase(
+    taskRepository: ref.watch(taskRepositoryProvider),
   ),
 );
 
@@ -70,11 +114,12 @@ final categoryListBlocProvider = Provider(
     );
   },
 );
+
 final categoryAddBlocProvider = Provider(
   (ref) => CategoryAddBloc(
     ref.watch(addCategoryUseCaseProvider),
     ref.watch(isValidCategoryNameUseCaseProvider),
-    ref.watch(getCategoriesUseCaseProvider)
+    ref.watch(getCategoriesUseCaseProvider),
   ),
 );
 
@@ -90,27 +135,32 @@ final categoryEditBlocProvider = Provider(
 
 final taskListBlocProvider = Provider(
   (ref) => TaskListBloc(
-    ref.watch(taskUseCaseProvider),
+    ref.watch(getTasksUseCaseProvider),
+    ref.watch(getTaskUseCaseProvider),
+    ref.watch(removeTaskUseCaseProvider),
+    ref.watch(completeTaskUseCaseProvider),
+    ref.watch(favourTaskUseCaseProvider),
   ),
 );
 
 final taskAddBlocProvider = Provider(
   (ref) => TaskAddBloc(
-    ref.watch(taskUseCaseProvider),
+    ref.watch(addTaskUseCaseProvider),
     ref.watch(taskListBlocProvider),
   ),
 );
 
 final taskEditBlocProvider = Provider(
   (ref) => TaskEditBloc(
-    ref.watch(taskUseCaseProvider),
+    ref.watch(editTaskUseCaseProvider),
+    ref.watch(getTaskUseCaseProvider),
     ref.watch(taskListBlocProvider),
   ),
 );
 
 final filterListBlocProvider = Provider(
   (ref) => FilterListBloc(
-    ref.watch(filterUseCaseProvider), 
-    ref.watch(taskListBlocProvider)
+    ref.watch(filterUseCaseProvider),
+    ref.watch(taskListBlocProvider),
   ),
 );
