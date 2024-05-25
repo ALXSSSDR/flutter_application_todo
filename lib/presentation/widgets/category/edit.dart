@@ -135,7 +135,7 @@ Widget build(BuildContext context) {
               ],
             ),
           );
-        } else if (state is Updating) {
+        } else if (state is Success) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is Error) {
           return Padding(
@@ -180,7 +180,7 @@ Widget build(BuildContext context) {
             ),
           );
         } else {
-          return Container(); // return an empty container for any other state
+          return Container(); 
         }
       },
     ),

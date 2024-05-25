@@ -11,4 +11,3 @@ class RemoveCategoryUseCase {
     await categoryRepository.removeCategory(categoryId);
   }
 }
-
