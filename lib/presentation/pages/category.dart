@@ -4,7 +4,7 @@ import 'package:flutter_application_1/presentation/widgets/category/add.dart';
 import 'package:flutter_application_1/presentation/widgets/category/list.dart';
 
 class CategoryListPage extends ConsumerWidget {
-  const CategoryListPage({Key? key}) : super(key: key);
+  const CategoryListPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
