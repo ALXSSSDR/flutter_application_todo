@@ -11,3 +11,5 @@ class IsValidCategoryNameUseCase {
     return !(await categoryRepository.categoryAlreadyExist(name));
   }
 }
+
+
