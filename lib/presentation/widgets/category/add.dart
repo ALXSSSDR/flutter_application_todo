@@ -14,19 +14,19 @@ class CategoryAddWidget extends ConsumerStatefulWidget {
 
 class _CategoryAddWidgetState extends ConsumerState<CategoryAddWidget> {
   late final GlobalKey<FormState> nameKey;
-  final TextEditingController nameController = TextEditingController();
-  
+  late final TextEditingController nameController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameKey = GlobalKey<FormState>();
+    nameController = TextEditingController();
+  }
 
   @override
   void dispose() {
     nameController.dispose();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    nameKey = GlobalKey<FormState>();
-    super.initState();
   }
 
   @override
@@ -41,11 +41,23 @@ class _CategoryAddWidgetState extends ConsumerState<CategoryAddWidget> {
       child: BlocBuilder<CategoryAddBloc, CategoryAddState>(
         bloc: bloc,
         builder: (_, state) {
-  if (state is Input) {
+          if (state is Input) {
+            return _buildInputForm(context, bloc);
+          } else if (state is Updating) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is Error) {
+            return _buildErrorState(context, bloc, state);
+          }
+          return Container();
+        },
+      ),
+    );
+  }
+
+  Widget _buildInputForm(BuildContext context, CategoryAddBloc bloc) {
     return Padding(
       padding: const EdgeInsets.all(18.0) +
-          EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom),
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -63,8 +75,7 @@ class _CategoryAddWidgetState extends ConsumerState<CategoryAddWidget> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                      color: Theme.of(context).brightness ==
-                              Brightness.dark
+                      color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
                           : Colors.black,
                       width: 2),
@@ -72,8 +83,7 @@ class _CategoryAddWidgetState extends ConsumerState<CategoryAddWidget> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                      color: Theme.of(context).brightness ==
-                              Brightness.dark
+                      color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
                           : Colors.black,
                       width: 2),
@@ -121,8 +131,7 @@ class _CategoryAddWidgetState extends ConsumerState<CategoryAddWidget> {
                 child: Text(
                   'Добавить',
                   style: TextStyle(
-                    color: (Theme.of(context).brightness ==
-                            Brightness.dark)
+                    color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.black
                         : Colors.white,
                   ),
@@ -133,12 +142,11 @@ class _CategoryAddWidgetState extends ConsumerState<CategoryAddWidget> {
         ],
       ),
     );
-  } else if (state is Updating) {
-    return const Center(child: CircularProgressIndicator());
-  } else if (state is Error) {
+  }
+
+  Widget _buildErrorState(BuildContext context, CategoryAddBloc bloc, Error state) {
     return Padding(
-      padding:
-          const EdgeInsets.only(bottom: 18.0, left: 18.0, right: 18.0),
+      padding: const EdgeInsets.only(bottom: 18.0, left: 18.0, right: 18.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -150,7 +158,7 @@ class _CategoryAddWidgetState extends ConsumerState<CategoryAddWidget> {
             onPressed: bloc.refresh,
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(
-                  (Theme.of(context).brightness == Brightness.dark)
+                  Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
                       : Colors.black),
               shape: MaterialStateProperty.all(
@@ -165,8 +173,7 @@ class _CategoryAddWidgetState extends ConsumerState<CategoryAddWidget> {
                 child: Text(
                   'Подтвердить',
                   style: TextStyle(
-                    color: (Theme.of(context).brightness ==
-                            Brightness.dark)
+                    color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.black
                         : Colors.white,
                   ),
@@ -175,12 +182,6 @@ class _CategoryAddWidgetState extends ConsumerState<CategoryAddWidget> {
             ),
           ),
         ],
-      ),
-    );
-  }
-  return Container();
-},
-
       ),
     );
   }
