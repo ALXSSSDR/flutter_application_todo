@@ -1,9 +1,9 @@
-import 'package:flutter_application_1/data/models/category.dart';
+import 'package:flutter_application_1/domain/entities/category.dart';
 
 abstract class CategoryRepository {
-  Future<List<CategoryModel>> getCategories();
+  Future<List<CategoryEntity>> getCategories();
 
-  Future<void> addCategory(CategoryModel category);
+  Future<void> addCategory(CategoryEntity category);
 
   Future<void> editCategory(String newCategoryName, String oldCategoryName);
 

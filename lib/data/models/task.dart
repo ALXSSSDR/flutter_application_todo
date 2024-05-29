@@ -1,19 +1,12 @@
-class TaskModel {
-  final String id;
-  final String name;
-  final DateTime createdAt;
-  final String description;
-  bool isCompleted;
-  bool isFavourite;
-  final String categoryId;
+import 'package:drift/drift.dart';
+import 'package:flutter_application_1/data/models/category.dart';
 
-  TaskModel({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-    required this.description,
-    this.isCompleted = false,
-    this.isFavourite = false,
-    required this.categoryId,
-  });
+class TaskModel extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+  BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
+  BoolColumn get isFavourite => boolean().withDefault(const Constant(false))();
+  TextColumn get categoryId => text().references(CategoryModel, #id)();
 }

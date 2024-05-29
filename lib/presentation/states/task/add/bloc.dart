@@ -17,7 +17,7 @@ class TaskAddBloc extends Cubit<TaskAddState> {
     try {
       emit(const Input());
 
-      await _addTaskUseCase.execute(name, description, categoryId);
+      await _addTaskUseCase.addTask(name, description, categoryId);
       await _taskListBloc.refresh(categoryId);
     } catch (e) {
       emit(Error(msg: e.toString()));

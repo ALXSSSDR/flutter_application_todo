@@ -12,15 +12,15 @@ class AddTaskUseCase {
     required this.taskMapper,
   });
 
-  Future<void> execute(
+  Future<void> addTask(
       String name, String description, String categoryId) async {
     TaskEntity newTask = TaskEntity(
-        id: const Uuid().v4(),
+        id: const Uuid().v1(),
         name: name.trim(),
         createdAt: DateTime.now(),
         description: description,
         categoryId: categoryId);
 
-    taskRepository.addTask(await taskMapper.mapTaskEntity(newTask));
+    await taskRepository.addTask(newTask);
   }
 }

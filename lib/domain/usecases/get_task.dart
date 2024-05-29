@@ -11,7 +11,9 @@ class GetTaskUseCase {
     required this.taskMapper,
   });
 
-  Future<TaskEntity> execute(String taskId) async {
-    return taskMapper.mapTaskModel(await taskRepository.getTask(taskId));
+  Future<TaskEntity> getTask(String taskId) async {
+    return await taskRepository.getTask(taskId);
   }
+
+  execute(String taskId) {}
 }

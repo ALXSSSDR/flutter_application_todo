@@ -1,24 +1,30 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_application_1/core/provider/mappers.dart';
 import 'package:flutter_application_1/core/provider/repository.dart';
-import '../../domain/usecases/add_category.dart';
-import '../../domain/usecases/edit_category.dart';
-import '../../domain/usecases/get_categories.dart';
-import '../../domain/usecases/is_valid_category_name.dart';
-import '../../domain/usecases/remove_category.dart';
-import '../../domain/usecases/filter.dart';
-import '../../domain/usecases/add_task.dart';
-import '../../domain/usecases/edit_task.dart';
-import '../../domain/usecases/get_task.dart';
-import '../../domain/usecases/get_tasks.dart';
-import '../../domain/usecases/remove_task.dart';
-import '../../domain/usecases/complete_task.dart';
-import '../../domain/usecases/favour_task.dart';
+import 'package:flutter_application_1/domain/usecases/add_category.dart';
+import 'package:flutter_application_1/domain/usecases/edit_category.dart';
+import 'package:flutter_application_1/domain/usecases/get_categories.dart';
+import 'package:flutter_application_1/domain/usecases/is_valid_category_name.dart';
+import 'package:flutter_application_1/domain/usecases/remove_category.dart';
+import 'package:flutter_application_1/domain/usecases/filter.dart';
+import 'package:flutter_application_1/domain/usecases/add_task.dart';
+import 'package:flutter_application_1/domain/usecases/edit_task.dart';
+import 'package:flutter_application_1/domain/usecases/get_task.dart';
+import 'package:flutter_application_1/domain/usecases/get_tasks.dart';
+import 'package:flutter_application_1/domain/usecases/remove_task.dart';
+import 'package:flutter_application_1/domain/usecases/complete_task.dart';
+import 'package:flutter_application_1/domain/usecases/favour_task.dart';
+import 'package:flutter_application_1/presentation/states/category/add/bloc.dart';
+import 'package:flutter_application_1/presentation/states/category/edit/bloc.dart';
+import 'package:flutter_application_1/presentation/states/category/list/bloc.dart';
+import 'package:flutter_application_1/presentation/states/filter/bloc.dart';
+import 'package:flutter_application_1/presentation/states/task/add/bloc.dart';
+import 'package:flutter_application_1/presentation/states/task/edit/bloc.dart';
+import 'package:flutter_application_1/presentation/states/task/list/bloc.dart';
 
 final addCategoryUseCaseProvider = Provider<AddCategoryUseCase>(
   (ref) => AddCategoryUseCase(
     categoryRepository: ref.watch(categoryRepositoryProvider),
-    categoryMapper: ref.watch(categoryMapperProvider),
   ),
 );
 
@@ -96,5 +102,64 @@ final completeTaskUseCaseProvider = Provider<CompleteTaskUseCase>(
 final favourTaskUseCaseProvider = Provider<FavourTaskUseCase>(
   (ref) => FavourTaskUseCase(
     taskRepository: ref.watch(taskRepositoryProvider),
+  ),
+);
+
+final categoryListBlocProvider = Provider(
+  (ref) {
+    return CategoryListBloc(
+      ref.watch(getCategoriesUseCaseProvider),
+      ref.watch(removeCategoryUseCaseProvider),
+    );
+  },
+);
+
+final categoryAddBlocProvider = Provider(
+  (ref) => CategoryAddBloc(
+    ref.watch(addCategoryUseCaseProvider),
+    ref.watch(isValidCategoryNameUseCaseProvider),
+    ref.watch(getCategoriesUseCaseProvider),
+  ),
+);
+
+final categoryEditBlocProvider = Provider(
+  (ref) {
+    return CategoryEditBloc(
+      ref.watch(editCategoryUseCaseProvider),
+      ref.watch(isValidCategoryNameUseCaseProvider),
+      ref.watch(categoryListBlocProvider),
+    );
+  },
+);
+
+final taskListBlocProvider = Provider(
+  (ref) => TaskListBloc(
+    ref.watch(getTasksUseCaseProvider),
+    ref.watch(getTaskUseCaseProvider),
+    ref.watch(removeTaskUseCaseProvider),
+    ref.watch(completeTaskUseCaseProvider),
+    ref.watch(favourTaskUseCaseProvider),
+  ),
+);
+
+final taskAddBlocProvider = Provider(
+  (ref) => TaskAddBloc(
+    ref.watch(addTaskUseCaseProvider),
+    ref.watch(taskListBlocProvider),
+  ),
+);
+
+final taskEditBlocProvider = Provider(
+  (ref) => TaskEditBloc(
+    ref.watch(editTaskUseCaseProvider),
+    ref.watch(getTaskUseCaseProvider),
+    ref.watch(taskListBlocProvider),
+  ),
+);
+
+final filterListBlocProvider = Provider(
+  (ref) => FilterListBloc(
+    ref.watch(filterUseCaseProvider),
+    ref.watch(taskListBlocProvider),
   ),
 );

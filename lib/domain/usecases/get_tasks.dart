@@ -14,13 +14,8 @@ class GetTasksUseCase {
     required this.taskMapper,
   });
 
-  Future<List<TaskEntity>> execute(String categoryId) async {
-    List<TaskEntity> tasks = await Future.wait(
-      (await taskRepository.getTasks(categoryId))
-          .map((taskModel) async =>
-              await taskMapper.mapTaskModel(taskModel))
-          .toList(),
-    );
+  Future<List<TaskEntity>> getTasks(String categoryId) async {
+    List<TaskEntity> tasks = await taskRepository.getTasks(categoryId);
 
     tasks = await filterUseCase.filterTasks(tasks, categoryId);
 
