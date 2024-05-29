@@ -1,11 +1,11 @@
-import 'package:flutter_application_1/data/models/task.dart';
+import 'package:flutter_application_1/domain/entities/task.dart';
 
 abstract class TaskRepository {
-  Future<List<TaskModel>> getTasks(String categoryId);
+  Future<List<TaskEntity>> getTasks(String categoryId);
 
-  Future<TaskModel> getTask(String taskId);
+  Future<TaskEntity> getTask(String taskId);
 
-  Future<void> addTask(TaskModel task);
+  Future<void> addTask(TaskEntity task);
 
   Future<void> editTask(String taskId, String name, String description);
 

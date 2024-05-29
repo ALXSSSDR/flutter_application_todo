@@ -8,11 +8,13 @@ class FilterUseCase {
   FilterUseCase({required this.filterRepository});
 
   Future<FilterStatus> getFilter(String categoryId) async {
-    return filterRepository.getFilter(categoryId);
+    final filter = await filterRepository.getFilter(categoryId);
+
+    return (filter == null) ? FilterStatus.uncompleted : filter.name;
   }
 
   Future<void> setFilter(FilterStatus status, String categoryId) async {
-    filterRepository.setFilter(status, categoryId);
+    await filterRepository.setFilter(status, categoryId);
   }
 
   Future<List<TaskEntity>> filterTasks(

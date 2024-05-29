@@ -1,28 +1,31 @@
-import 'package:flutter_application_1/data/models/task.dart';
+import 'package:drift/drift.dart';
+import 'package:flutter_application_1/data/datasources/db.dart';
 import 'package:flutter_application_1/domain/entities/task.dart';
 
 class TaskMapper {
-  Future<TaskModel> mapTaskEntity(TaskEntity task) async {
-    return TaskModel(
-      id: task.id,
-      name: task.name,
-      createdAt: task.createdAt,
-      description: task.description,
-      isCompleted: task.isCompleted,
-      isFavourite: task.isFavourite,
-      categoryId: task.categoryId,
+  Future<TaskModelCompanion> mapTaskEntity(TaskEntity task) async {
+    TaskModelCompanion taskModel = TaskModelCompanion(
+      id: Value(task.id),
+      name: Value(task.name),
+      createdAt: Value(task.createdAt),
+      description: Value(task.description),
+      isCompleted: Value(task.isCompleted),
+      isFavourite: Value(task.isFavourite),
+      categoryId: Value(task.categoryId),
     );
+
+    return taskModel;
   }
 
-  Future<TaskEntity> mapTaskModel(TaskModel task) async {
+  Future<TaskEntity> mapTaskModel(TaskModelData task) async {
     return TaskEntity(
-      id: task.id,
-      name: task.name,
-      createdAt: task.createdAt,
-      description: task.description,
-      isCompleted: task.isCompleted,
-      isFavourite: task.isFavourite,
-      categoryId: task.categoryId,
+      id: task.id.toString(),
+      name: task.name.toString(),
+      createdAt: DateTime.parse(task.createdAt.toString()),
+      description: task.description.toString(),
+      isCompleted: task.isCompleted.toString() == 'true',
+      isFavourite: task.isFavourite.toString() == 'true',
+      categoryId: task.categoryId.toString(),
     );
   }
 }

@@ -1,82 +1,69 @@
-import 'package:flutter_application_1/data/datasources/local.dart';
-import 'package:flutter_application_1/data/models/task.dart';
+import 'package:drift/drift.dart';
+import 'package:flutter_application_1/data/datasources/db.dart';
+import 'package:flutter_application_1/data/mappers/task.dart';
+import 'package:flutter_application_1/domain/entities/task.dart';
 import 'package:flutter_application_1/domain/repository/filter.dart';
 import 'package:flutter_application_1/domain/repository/task.dart';
 
 class TaskRepositoryData implements TaskRepository {
-  final LocalDataSource dataSource;
+  final AppDatabase db;
   final FilterRepository filterRepository;
+  final TaskMapper taskMapper;
 
-  TaskRepositoryData({required this.dataSource, required this.filterRepository});
+  TaskRepositoryData(
+      {required this.filterRepository,
+      required this.taskMapper,
+      required this.db});
 
   @override
-  Future<List<TaskModel>> getTasks(String categoryId) async {
-    return dataSource.tasks.where((task) => task.categoryId == categoryId).toList();
+  Future<List<TaskEntity>> getTasks(String categoryId) async {
+    final categoryData = db.select(db.taskModel)
+      ..where((task) => task.categoryId.equals(categoryId));
+
+    final query = await Future.wait((await categoryData.get())
+        .map((task) => taskMapper.mapTaskModel(task))
+        .toList());
+
+    return query;
   }
 
   @override
-  Future<TaskModel> getTask(String taskId) async {
-    return dataSource.tasks.where((task) => task.id == taskId).first;
+  Future<TaskEntity> getTask(String taskId) async {
+    final query = db.select(db.taskModel)
+      ..where((task) => task.id.equals(taskId));
+
+    return await taskMapper.mapTaskModel((await query.get()).first);
   }
 
   @override
-  Future<void> addTask(TaskModel task) async {
-    dataSource.tasks.add(task);
+  Future<void> addTask(TaskEntity task) async {
+    db.into(db.taskModel).insert(await taskMapper.mapTaskEntity(task));
   }
 
   @override
   Future<void> editTask(String taskId, String name, String description) async {
-    TaskModel task = dataSource.tasks.firstWhere((task) => task.id == taskId);
-
-    dataSource.tasks.remove(task);
-
-    dataSource.tasks.add(TaskModel(
-      id: task.id,
-      name: name,
-      description: description,
-      createdAt: task.createdAt,
-      isCompleted: task.isCompleted,
-      isFavourite: task.isFavourite,
-      categoryId: task.categoryId,
-    ));
+    db.update(db.taskModel)
+      ..where((task) => task.id.equals(taskId))
+      ..write(TaskModelCompanion(
+          name: Value(name.trim()), description: Value(description)));
   }
 
   @override
   Future<void> removeTask(String taskId) async {
-    dataSource.tasks.remove(dataSource.tasks.firstWhere((task) => task.id == taskId));
+    (db.delete(db.taskModel)..where((task) => task.id.equals(taskId))).go();
   }
 
   @override
   Future<void> completeTask(String taskId, bool isCompleted) async {
-    TaskModel task = dataSource.tasks.firstWhere((task) => task.id == taskId);
-
-    dataSource.tasks.remove(task);
-
-    dataSource.tasks.add(TaskModel(
-      id: task.id,
-      name: task.name,
-      description: task.description,
-      createdAt: task.createdAt,
-      isCompleted: isCompleted,
-      isFavourite: task.isFavourite,
-      categoryId: task.categoryId,
-    ));
+    db.update(db.taskModel)
+      ..where((task) => task.id.equals(taskId))
+      ..write(TaskModelCompanion(isCompleted: Value(isCompleted)));
   }
 
   @override
   Future<void> favourTask(String taskId, bool isFavourite) async {
-    TaskModel task = dataSource.tasks.firstWhere((task) => task.id == taskId);
-
-    dataSource.tasks.remove(task);
-
-    dataSource.tasks.add(TaskModel(
-      id: task.id,
-      name: task.name,
-      description: task.description,
-      createdAt: task.createdAt,
-      isCompleted: task.isCompleted,
-      isFavourite: isFavourite,
-      categoryId: task.categoryId,
-    ));
+    db.update(db.taskModel)
+      ..where((task) => task.id.equals(taskId))
+      ..write(TaskModelCompanion(isFavourite: Value(isFavourite)));
   }
 }

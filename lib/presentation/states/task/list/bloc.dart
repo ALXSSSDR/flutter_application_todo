@@ -26,7 +26,7 @@ class TaskListBloc extends Cubit<TaskListState> {
     emit(const Loading());
 
     try {
-      final data = await _getTasksUseCase.execute(categoryId);
+      final data = await _getTasksUseCase.getTasks(categoryId); 
       emit(Data(data: data));
     } catch (e) {
       emit(Error(msg: e.toString()));

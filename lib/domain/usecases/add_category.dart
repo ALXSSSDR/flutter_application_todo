@@ -1,16 +1,11 @@
-import 'package:flutter_application_1/data/mappers/category.dart';
 import 'package:flutter_application_1/domain/entities/category.dart';
 import 'package:flutter_application_1/domain/repository/category.dart';
 import 'package:uuid/uuid.dart';
 
 class AddCategoryUseCase {
   final CategoryRepository categoryRepository;
-  final CategoryMapper categoryMapper;
 
-  AddCategoryUseCase({
-    required this.categoryRepository,
-    required this.categoryMapper,
-  });
+  AddCategoryUseCase({required this.categoryRepository});
 
   Future<bool> execute(String newCategoryName) async {
     if (await categoryRepository.categoryAlreadyExist(newCategoryName)) {
@@ -23,7 +18,7 @@ class AddCategoryUseCase {
       createdAt: DateTime.now(),
     );
 
-    await categoryRepository.addCategory(await categoryMapper.mapCategoryEntity(category));
+    await categoryRepository.addCategory(category);
 
     return true;
   }
