@@ -1,0 +1,34 @@
+import 'package:flutter_application_1/data/models/filter.dart';
+import 'package:flutter_application_1/domain/entities/task.dart';
+import 'package:flutter_application_1/domain/repository/filter.dart';
+
+class FilterUseCase {
+  final FilterRepository filterRepository;
+
+  FilterUseCase({required this.filterRepository});
+
+  Future<FilterStatus> getFilter(String categoryId) async {
+    return filterRepository.getFilter(categoryId);
+  }
+
+  Future<void> setFilter(FilterStatus status, String categoryId) async {
+    filterRepository.setFilter(status, categoryId);
+  }
+
+  Future<List<TaskEntity>> filterTasks(
+      List<TaskEntity> tasks, String categoryId) async {
+    FilterStatus filter = await getFilter(categoryId);
+
+    tasks = switch (filter) {
+      FilterStatus.completed =>
+        tasks.where((task) => task.isCompleted).toList(),
+      FilterStatus.uncompleted =>
+        tasks.where((task) => !task.isCompleted).toList(),
+      FilterStatus.all => tasks,
+      FilterStatus.favourite =>
+        tasks.where((task) => task.isFavourite).toList(),
+    };
+
+    return tasks;
+  }
+}
