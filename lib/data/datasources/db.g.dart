@@ -822,18 +822,241 @@ class FilterModelCompanion extends UpdateCompanion<FilterModelData> {
   }
 }
 
+class $ImgModelTable extends ImgModel
+    with TableInfo<$ImgModelTable, ImgModelData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ImgModelTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
+  @override
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+      'url', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+      'task_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES task_model (id)'));
+  @override
+  List<GeneratedColumn> get $columns => [id, url, taskId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'img_model';
+  @override
+  VerificationContext validateIntegrity(Insertable<ImgModelData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('url')) {
+      context.handle(
+          _urlMeta, url.isAcceptableOrUnknown(data['url']!, _urlMeta));
+    } else if (isInserting) {
+      context.missing(_urlMeta);
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(_taskIdMeta,
+          taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta));
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  ImgModelData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ImgModelData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      url: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}url'])!,
+      taskId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}task_id'])!,
+    );
+  }
+
+  @override
+  $ImgModelTable createAlias(String alias) {
+    return $ImgModelTable(attachedDatabase, alias);
+  }
+}
+
+class ImgModelData extends DataClass implements Insertable<ImgModelData> {
+  final String id;
+  final String url;
+  final String taskId;
+  const ImgModelData(
+      {required this.id, required this.url, required this.taskId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['url'] = Variable<String>(url);
+    map['task_id'] = Variable<String>(taskId);
+    return map;
+  }
+
+  ImgModelCompanion toCompanion(bool nullToAbsent) {
+    return ImgModelCompanion(
+      id: Value(id),
+      url: Value(url),
+      taskId: Value(taskId),
+    );
+  }
+
+  factory ImgModelData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ImgModelData(
+      id: serializer.fromJson<String>(json['id']),
+      url: serializer.fromJson<String>(json['url']),
+      taskId: serializer.fromJson<String>(json['taskId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'url': serializer.toJson<String>(url),
+      'taskId': serializer.toJson<String>(taskId),
+    };
+  }
+
+  ImgModelData copyWith({String? id, String? url, String? taskId}) =>
+      ImgModelData(
+        id: id ?? this.id,
+        url: url ?? this.url,
+        taskId: taskId ?? this.taskId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('ImgModelData(')
+          ..write('id: $id, ')
+          ..write('url: $url, ')
+          ..write('taskId: $taskId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, url, taskId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ImgModelData &&
+          other.id == this.id &&
+          other.url == this.url &&
+          other.taskId == this.taskId);
+}
+
+class ImgModelCompanion extends UpdateCompanion<ImgModelData> {
+  final Value<String> id;
+  final Value<String> url;
+  final Value<String> taskId;
+  final Value<int> rowid;
+  const ImgModelCompanion({
+    this.id = const Value.absent(),
+    this.url = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ImgModelCompanion.insert({
+    required String id,
+    required String url,
+    required String taskId,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        url = Value(url),
+        taskId = Value(taskId);
+  static Insertable<ImgModelData> custom({
+    Expression<String>? id,
+    Expression<String>? url,
+    Expression<String>? taskId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (url != null) 'url': url,
+      if (taskId != null) 'task_id': taskId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ImgModelCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? url,
+      Value<String>? taskId,
+      Value<int>? rowid}) {
+    return ImgModelCompanion(
+      id: id ?? this.id,
+      url: url ?? this.url,
+      taskId: taskId ?? this.taskId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ImgModelCompanion(')
+          ..write('id: $id, ')
+          ..write('url: $url, ')
+          ..write('taskId: $taskId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   _$AppDatabaseManager get managers => _$AppDatabaseManager(this);
   late final $CategoryModelTable categoryModel = $CategoryModelTable(this);
   late final $TaskModelTable taskModel = $TaskModelTable(this);
   late final $FilterModelTable filterModel = $FilterModelTable(this);
+  late final $ImgModelTable imgModel = $ImgModelTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [categoryModel, taskModel, filterModel];
+      [categoryModel, taskModel, filterModel, imgModel];
 }
 
 typedef $$CategoryModelTableInsertCompanionBuilder = CategoryModelCompanion
@@ -1112,6 +1335,19 @@ class $$TaskModelTableFilterComposer
                 $state.db.categoryModel, joinBuilder, parentComposers)));
     return composer;
   }
+
+  ComposableFilter imgModelRefs(
+      ComposableFilter Function($$ImgModelTableFilterComposer f) f) {
+    final $$ImgModelTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.imgModel,
+        getReferencedColumn: (t) => t.taskId,
+        builder: (joinBuilder, parentComposers) =>
+            $$ImgModelTableFilterComposer(ComposerState(
+                $state.db, $state.db.imgModel, joinBuilder, parentComposers)));
+    return f(composer);
+  }
 }
 
 class $$TaskModelTableOrderingComposer
@@ -1281,6 +1517,129 @@ class $$FilterModelTableOrderingComposer
   }
 }
 
+typedef $$ImgModelTableInsertCompanionBuilder = ImgModelCompanion Function({
+  required String id,
+  required String url,
+  required String taskId,
+  Value<int> rowid,
+});
+typedef $$ImgModelTableUpdateCompanionBuilder = ImgModelCompanion Function({
+  Value<String> id,
+  Value<String> url,
+  Value<String> taskId,
+  Value<int> rowid,
+});
+
+class $$ImgModelTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ImgModelTable,
+    ImgModelData,
+    $$ImgModelTableFilterComposer,
+    $$ImgModelTableOrderingComposer,
+    $$ImgModelTableProcessedTableManager,
+    $$ImgModelTableInsertCompanionBuilder,
+    $$ImgModelTableUpdateCompanionBuilder> {
+  $$ImgModelTableTableManager(_$AppDatabase db, $ImgModelTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$ImgModelTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$ImgModelTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$ImgModelTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> url = const Value.absent(),
+            Value<String> taskId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ImgModelCompanion(
+            id: id,
+            url: url,
+            taskId: taskId,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            required String id,
+            required String url,
+            required String taskId,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ImgModelCompanion.insert(
+            id: id,
+            url: url,
+            taskId: taskId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$ImgModelTableProcessedTableManager extends ProcessedTableManager<
+    _$AppDatabase,
+    $ImgModelTable,
+    ImgModelData,
+    $$ImgModelTableFilterComposer,
+    $$ImgModelTableOrderingComposer,
+    $$ImgModelTableProcessedTableManager,
+    $$ImgModelTableInsertCompanionBuilder,
+    $$ImgModelTableUpdateCompanionBuilder> {
+  $$ImgModelTableProcessedTableManager(super.$state);
+}
+
+class $$ImgModelTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $ImgModelTable> {
+  $$ImgModelTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get url => $state.composableBuilder(
+      column: $state.table.url,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  $$TaskModelTableFilterComposer get taskId {
+    final $$TaskModelTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.taskId,
+        referencedTable: $state.db.taskModel,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) =>
+            $$TaskModelTableFilterComposer(ComposerState(
+                $state.db, $state.db.taskModel, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class $$ImgModelTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $ImgModelTable> {
+  $$ImgModelTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get url => $state.composableBuilder(
+      column: $state.table.url,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  $$TaskModelTableOrderingComposer get taskId {
+    final $$TaskModelTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.taskId,
+        referencedTable: $state.db.taskModel,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) =>
+            $$TaskModelTableOrderingComposer(ComposerState(
+                $state.db, $state.db.taskModel, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
 class _$AppDatabaseManager {
   final _$AppDatabase _db;
   _$AppDatabaseManager(this._db);
@@ -1290,4 +1649,6 @@ class _$AppDatabaseManager {
       $$TaskModelTableTableManager(_db, _db.taskModel);
   $$FilterModelTableTableManager get filterModel =>
       $$FilterModelTableTableManager(_db, _db.filterModel);
+  $$ImgModelTableTableManager get imgModel =>
+      $$ImgModelTableTableManager(_db, _db.imgModel);
 }

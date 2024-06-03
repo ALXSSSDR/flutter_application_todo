@@ -32,7 +32,7 @@ class TaskEditBloc extends Cubit<TaskEditState> {
     return true;
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh(String taskId) async {
     emit(const Input());
   }
 }
