@@ -159,7 +159,6 @@ final taskAddBlocProvider = Provider(
     ref.watch(taskListBlocProvider),
   ),
 );
-
 final taskEditBlocProvider = Provider(
   (ref) => TaskEditBloc(
     ref.watch(editTaskUseCaseProvider),
@@ -167,7 +166,6 @@ final taskEditBlocProvider = Provider(
     ref.watch(taskListBlocProvider),
   ),
 );
-
 final filterListBlocProvider = Provider(
   (ref) => FilterListBloc(
     ref.watch(filterUseCaseProvider),
