@@ -25,7 +25,6 @@ import 'package:flutter_application_1/presentation/states/task/list/bloc.dart';
 final addCategoryUseCaseProvider = Provider<AddCategoryUseCase>(
   (ref) => AddCategoryUseCase(
     categoryRepository: ref.watch(categoryRepositoryProvider),
-    categoryMapper: ref.watch(categoryMapperProvider),
   ),
 );
 
@@ -44,7 +43,7 @@ final isValidCategoryNameUseCaseProvider = Provider<IsValidCategoryNameUseCase>(
 final getCategoriesUseCaseProvider = Provider<GetCategoriesUseCase>(
   (ref) => GetCategoriesUseCase(
     categoryRepository: ref.watch(categoryRepositoryProvider),
-    categoryMapper: ref.watch(categoryMapperProvider),
+    categoryMapper: ref.watch(categoryMapperProvider), 
   ),
 );
 

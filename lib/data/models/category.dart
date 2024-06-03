@@ -1,11 +1,7 @@
-class CategoryModel {
-  final String id;
-  final String name;
-  final DateTime createdAt;
+import 'package:drift/drift.dart';
 
-  const CategoryModel({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-  });
+class CategoryModel extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  DateTimeColumn get createdAt => dateTime()();
 }

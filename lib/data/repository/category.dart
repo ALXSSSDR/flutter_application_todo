@@ -1,48 +1,52 @@
-import 'package:flutter_application_1/data/datasources/local.dart';
-import 'package:flutter_application_1/data/models/category.dart';
+import 'package:drift/drift.dart';
+import 'package:flutter_application_1/data/datasources/db.dart';
+import 'package:flutter_application_1/data/mappers/category.dart';
+import 'package:flutter_application_1/domain/entities/category.dart';
 import 'package:flutter_application_1/domain/repository/category.dart';
 
 class CategoryRepositoryData implements CategoryRepository {
-  final LocalDataSource dataSource;
+  final AppDatabase db;
+  final CategoryMapper categoryMapper;
 
-  CategoryRepositoryData(this.dataSource);
+  CategoryRepositoryData({required this.db, required this.categoryMapper});
 
   @override
-  Future<List<CategoryModel>> getCategories() async {
-    return dataSource.categories;
+  Future<List<CategoryEntity>> getCategories() async {
+    final categoryData = await db.select(db.categoryModel).get();
+    return categoryData.map((category) => categoryMapper.mapCategoryModel(category)).toList();
   }
 
   @override
-  Future<void> addCategory(CategoryModel category) async {
-    dataSource.categories.add(category);
+  Future<void> addCategory(CategoryEntity category) async {
+    final categoryModel = categoryMapper.mapCategoryEntity(category);
+    await db.into(db.categoryModel).insert(categoryModel);
   }
 
   @override
-  Future<void> editCategory(
-      String newCategoryName, String oldCategoryName) async {
-    CategoryModel category = dataSource.categories
-        .where((category) => category.name == oldCategoryName)
-        .first;
-
-    dataSource.categories.remove(category);
-
-    dataSource.categories.add(CategoryModel(
-      id: category.id,
-      name: newCategoryName,
-      createdAt: category.createdAt,
-    ));
+  Future<void> editCategory(String newCategoryName, String oldCategoryName) async {
+    await (db.update(db.categoryModel)
+      ..where((category) => category.name.equals(oldCategoryName)))
+        .write(CategoryModelCompanion(name: Value(newCategoryName.trim())));
   }
 
   @override
   Future<void> removeCategory(String categoryId) async {
-    dataSource.categories.remove(
-        dataSource.categories.where((category) => category.id == categoryId).first);
+    await (db.delete(db.categoryModel)
+          ..where((category) => category.id.equals(categoryId)))
+        .go();
+    await (db.delete(db.taskModel)
+          ..where((task) => task.categoryId.equals(categoryId)))
+        .go();
+    await (db.delete(db.filterModel)
+          ..where((filter) => filter.categoryId.equals(categoryId)))
+        .go();
   }
 
   @override
   Future<bool> categoryAlreadyExist(String categoryName) async {
-    return dataSource.categories
-        .where((category) => category.name == categoryName)
-        .isNotEmpty;
+    final categoryQuery = db.select(db.categoryModel)
+      ..where((category) => category.name.equals(categoryName));
+    final categories = await categoryQuery.get();
+    return categories.isNotEmpty;
   }
 }

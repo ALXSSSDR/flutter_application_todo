@@ -1,18 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_1/domain/usecases/add_category.dart';
 import 'package:flutter_application_1/domain/usecases/is_valid_category_name.dart';
-import 'package:flutter_application_1/domain/usecases/get_categories.dart'; 
+import 'package:flutter_application_1/domain/usecases/get_categories.dart';
 import 'state.dart';
 
 class CategoryAddBloc extends Cubit<CategoryAddState> {
   final AddCategoryUseCase _addCategoryUseCase;
   final IsValidCategoryNameUseCase _isValidCategoryNameUseCase;
-  final GetCategoriesUseCase _getCategoriesUseCase; 
+  final GetCategoriesUseCase _getCategoriesUseCase;
 
   CategoryAddBloc(
     this._addCategoryUseCase,
     this._isValidCategoryNameUseCase,
-    this._getCategoriesUseCase, 
+    this._getCategoriesUseCase,
   ) : super(const Input());
 
   Future<bool> addCategory(String newCategoryName) async {
@@ -23,13 +23,16 @@ class CategoryAddBloc extends Cubit<CategoryAddState> {
         emit(const Error(msg: 'Такая категория уже существует'));
         return false;
       }
-      await _addCategoryUseCase.execute(newCategoryName);
+      final result = await _addCategoryUseCase.execute(newCategoryName); 
+      if (!result) {
+        emit(const Error(msg: 'Ошибка при добавлении категории'));
+        return false;
+      }
       await _getCategoriesUseCase.execute();
       emit(const Input());
-      
     } catch (e) {
       emit(Error(msg: e.toString()));
-      return true;
+      return false;
     }
     return true;
   }
