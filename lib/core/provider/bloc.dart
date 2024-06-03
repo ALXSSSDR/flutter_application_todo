@@ -85,6 +85,7 @@ final getTaskUseCaseProvider = Provider<GetTaskUseCase>(
   (ref) => GetTaskUseCase(
     taskRepository: ref.watch(taskRepositoryProvider),
     taskMapper: ref.watch(taskMapperProvider), 
+    imgUseCase: ref.watch(imgUseCaseProvider),
   ),
 );
 

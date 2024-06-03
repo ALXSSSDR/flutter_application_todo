@@ -20,11 +20,13 @@ class TaskEditBloc extends Cubit<TaskEditState> {
     try {
       emit(const Input());
 
-      final TaskEntity task = await _getTaskUseCase.execute(taskId);
+      final TaskEntity task = await _getTaskUseCase.getTask(taskId);
 
       await _editTaskUseCase.execute(taskId, name, description);
 
       await _taskListBloc.refresh(task.categoryId);
+      
+      emit(const Success()); 
     } catch (e) {
       emit(Error(msg: e.toString()));
       return false;
@@ -34,5 +36,11 @@ class TaskEditBloc extends Cubit<TaskEditState> {
 
   Future<void> refresh(String taskId) async {
     emit(const Input());
+    try {
+      final TaskEntity task = await _getTaskUseCase.getTask(taskId);
+      emit(Loaded(task)); 
+    } catch (e) {
+      emit(Error(msg: e.toString()));
+    }
   }
 }
