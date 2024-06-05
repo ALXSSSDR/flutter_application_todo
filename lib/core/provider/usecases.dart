@@ -21,6 +21,8 @@ import 'package:flutter_application_1/presentation/states/filter/bloc.dart';
 import 'package:flutter_application_1/presentation/states/task/add/bloc.dart';
 import 'package:flutter_application_1/presentation/states/task/edit/bloc.dart';
 import 'package:flutter_application_1/presentation/states/task/list/bloc.dart';
+import 'package:flutter_application_1/domain/usecases/image.dart';
+
 
 final addCategoryUseCaseProvider = Provider<AddCategoryUseCase>(
   (ref) => AddCategoryUseCase(
@@ -76,6 +78,7 @@ final getTaskUseCaseProvider = Provider<GetTaskUseCase>(
   (ref) => GetTaskUseCase(
     taskRepository: ref.watch(taskRepositoryProvider),
     taskMapper: ref.watch(taskMapperProvider),
+    imgUseCase: ref.watch(imgUseCaseProvider),
   ),
 );
 
@@ -84,6 +87,7 @@ final getTasksUseCaseProvider = Provider<GetTasksUseCase>(
     filterUseCase: ref.watch(filterUseCaseProvider),
     taskRepository: ref.watch(taskRepositoryProvider),
     taskMapper: ref.watch(taskMapperProvider),
+    imgUseCase: ref.watch(imgUseCaseProvider),
   ),
 );
 
@@ -157,9 +161,17 @@ final taskEditBlocProvider = Provider(
   ),
 );
 
+
 final filterListBlocProvider = Provider(
   (ref) => FilterListBloc(
     ref.watch(filterUseCaseProvider),
     ref.watch(taskListBlocProvider),
+  ),
+);
+
+final imgUseCaseProvider = Provider(
+  (ref) => ImgUseCase(
+    imgMapper: ref.watch(imgMapperProvider),
+    imgRepository: ref.watch(imgRepositoryProvider),
   ),
 );

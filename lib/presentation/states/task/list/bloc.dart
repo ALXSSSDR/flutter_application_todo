@@ -35,7 +35,7 @@ class TaskListBloc extends Cubit<TaskListState> {
 
   Future<bool> removeTask(String taskId) async {
     try {
-      final TaskEntity task = await _getTaskUseCase.execute(taskId);
+      final TaskEntity task = await _getTaskUseCase.getTask(taskId);
 
       await _removeTaskUseCase.execute(task.id);
 
@@ -51,7 +51,7 @@ class TaskListBloc extends Cubit<TaskListState> {
   Future<void> favourTask(String taskId, bool isFavourite) async {
     try {
       await _favourTaskUseCase.execute(taskId, isFavourite);
-      final task = await _getTaskUseCase.execute(taskId);
+      final task = await _getTaskUseCase.getTask(taskId);
       await refresh(task.categoryId);
     } catch (e) {
       emit(Error(msg: e.toString()));
@@ -61,7 +61,7 @@ class TaskListBloc extends Cubit<TaskListState> {
   Future<void> completeTask(String taskId, bool isCompleted) async {
     try {
       await _completeTaskUseCase.execute(taskId, isCompleted);
-      final task = await _getTaskUseCase.execute(taskId);
+      final task = await _getTaskUseCase.getTask(taskId);
       await refresh(task.categoryId);
     } catch (e) {
       emit(Error(msg: e.toString()));

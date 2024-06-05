@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_application_1/data/mappers/category.dart';
 import 'package:flutter_application_1/data/mappers/filter.dart';
 import 'package:flutter_application_1/data/mappers/task.dart';
+import 'package:flutter_application_1/data/mappers/image.dart';
 
 final categoryMapperProvider = Provider(
   (ref) => CategoryMapper(),
@@ -13,4 +14,9 @@ final taskMapperProvider = Provider(
 
 final filterMapperProvider = Provider(
   (ref) => FilterMapper(),
+);
+
+
+final imgMapperProvider = Provider(
+  (ref) => ImgMapper(),
 );

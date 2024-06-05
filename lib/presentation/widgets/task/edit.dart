@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/core/navigation/bottomsheets.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_application_1/core/provider/bloc.dart';
 import 'package:flutter_application_1/domain/entities/task.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_application_1/presentation/pages/image.dart';
 
 class TaskEditWidget extends ConsumerStatefulWidget {
   final TaskEntity task;
@@ -44,6 +47,7 @@ class _TaskEditWidgetState extends ConsumerState<TaskEditWidget> {
   @override
   Widget build(BuildContext context) {
     final bloc = ref.watch(taskEditBlocProvider);
+    final imgBloc = ref.watch(imgBlocProvider);
 
     return GestureDetector(
       onTap: () {
@@ -60,7 +64,6 @@ class _TaskEditWidgetState extends ConsumerState<TaskEditWidget> {
         child: ListView(
           controller: _scrollController,
           children: [
-            
             const SizedBox(
               height: 14,
             ),
@@ -149,6 +152,132 @@ class _TaskEditWidgetState extends ConsumerState<TaskEditWidget> {
                   return 'Поле не должно быть пустым';
                 }
                 return null;
+              },
+            ),
+            const SizedBox(
+              height: 14,
+            ),
+            Builder(
+              builder: (context) {
+                if (widget.task.imgUrls.isEmpty) {
+                  return CarouselSlider(
+                    options: CarouselOptions(
+                      height: 200.0,
+                      enableInfiniteScroll: false,
+                      enlargeCenterPage: true,
+                    ),
+                    items: [
+                      Stack(
+                        children: [
+                          SizedBox(
+                            height: 400,
+                            width: 400,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: const Icon(Icons.image),
+                            ),
+                          ),
+                          Positioned(
+                            right: 3,
+                            bottom: 10,
+                            child: IconButton(
+                              onPressed: () => openBottomSheet(
+                                context,
+                                ImgWidget(task: widget.task),
+                              ),
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    Colors.black.withOpacity(0.9)),
+                                shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                foregroundColor: MaterialStateProperty.all(
+                                    Colors.green),
+                              ),
+                              icon: const Icon(Icons.add),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  );
+                }
+                return CarouselSlider(
+                  options: CarouselOptions(
+                    height: 200.0,
+                    enableInfiniteScroll: false,
+                    enlargeCenterPage: true,
+                  ),
+                  items: widget.task.imgUrls
+                      .map(
+                        (img) => Builder(
+                          builder: (context) {
+                            return Stack(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10, right: 10),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.network(
+                                      img.url,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 3,
+                                  bottom: 10,
+                                  child: IconButton(
+                                    onPressed: () => openBottomSheet(
+                                      context,
+                                      ImgWidget(task: widget.task),
+                                    ),
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(
+                                          Colors.black.withOpacity(0.9)),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      foregroundColor: MaterialStateProperty.all(
+                                          Colors.green),
+                                    ),
+                                    icon: const Icon(Icons.add),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 3,
+                                  bottom: 10,
+                                  child: IconButton(
+                                    onPressed: () =>
+                                        imgBloc.removeImg(widget.task.id, img.id),
+                                    style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all(
+                                          Colors.black.withOpacity(0.9)),
+                                      shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      foregroundColor: MaterialStateProperty.all(
+                                          Colors.red),
+                                    ),
+                                    icon: const Icon(Icons.delete),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      )
+                      .toList(),
+                );
               },
             ),
             const SizedBox(
