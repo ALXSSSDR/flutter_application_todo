@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/presentation/states/image/bloc.dart';
+import 'package:flutter_application_1/presentation/states/image/state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_application_1/core/provider/bloc.dart';
 import 'package:flutter_application_1/domain/entities/task.dart';
@@ -24,8 +27,6 @@ class _ImgWidgetState extends ConsumerState<ImgWidget> {
   late final TextEditingController perPageController;
   late final TextEditingController pageController;
 
-  late final List<String> selectedImgs;
-
   @override
   void initState() {
     super.initState();
@@ -36,8 +37,6 @@ class _ImgWidgetState extends ConsumerState<ImgWidget> {
     searchController = TextEditingController();
     perPageController = TextEditingController(text: "20");
     pageController = TextEditingController(text: "1");
-
-    selectedImgs = [];
   }
 
   @override
@@ -50,7 +49,7 @@ class _ImgWidgetState extends ConsumerState<ImgWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = ref.watch(imgBlocProvider);
+    final bloc = ref.read(imgBlocProvider); 
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       child: WillPopScope(
@@ -72,16 +71,34 @@ class _ImgWidgetState extends ConsumerState<ImgWidget> {
                 perPageKey: perPageKey,
                 pageKey: pageKey,
               ),
-              ImgGallery(
-                perPageController: perPageController,
-                selectedImgs: selectedImgs,
+              BlocBuilder<ImgBloc, ImgState>(
+                bloc: bloc,
+                builder: (context, state) {
+                  List<String> selectedImgs = [];
+                  if (state is Data) {
+                    selectedImgs = state.selectedImgs;
+                  }
+                  return ImgGallery(
+                    perPageController: perPageController,
+                    selectedImgs: selectedImgs,
+                  );
+                },
               ),
-              ImgButton(
-                searchController: searchController,
-                perPageController: perPageController,
-                pageController: pageController,
-                task: widget.task,
-                selectedImgs: selectedImgs,
+              BlocBuilder<ImgBloc, ImgState>(
+                bloc: bloc,
+                builder: (context, state) {
+                  List<String> selectedImgs = [];
+                  if (state is Data) {
+                    selectedImgs = state.selectedImgs;
+                  }
+                  return ImgButton(
+                    searchController: searchController,
+                    perPageController: perPageController,
+                    pageController: pageController,
+                    task: widget.task,
+                    selectedImgs: selectedImgs,
+                  );
+                },
               ),
             ],
           ),

@@ -46,4 +46,20 @@ class ImgBloc extends Cubit<ImgState> {
       emit(Error(msg: 'Не удалось удалить изображение: $e'));
     }
   }
+
+  void addSelectedImg(String imgUrl) {
+    if (state is Data) {
+      final currentState = state as Data;
+      final updatedSelectedImgs = List<String>.from(currentState.selectedImgs)..add(imgUrl);
+      emit(currentState.copyWith(selectedImgs: updatedSelectedImgs));
+    }
+  }
+
+  void removeSelectedImg(String imgUrl) {
+    if (state is Data) {
+      final currentState = state as Data;
+      final updatedSelectedImgs = List<String>.from(currentState.selectedImgs)..remove(imgUrl);
+      emit(currentState.copyWith(selectedImgs: updatedSelectedImgs));
+    }
+  }
 }
