@@ -4,22 +4,25 @@ import 'package:flutter_application_1/presentation/states/task/edit/bloc.dart';
 import 'state.dart';
 
 class ImgBloc extends Cubit<ImgState> {
-  final ImgUseCase _imgkUseCase;
+  final ImgUseCase _imgUseCase;
   final TaskEditBloc _taskBloc;
 
-  ImgBloc(this._imgkUseCase, this._taskBloc) : super(const Input());
+  ImgBloc(this._imgUseCase, this._taskBloc) : super(const Input());
 
   Future<void> showImgs(String query, int page, int perPage) async {
     emit(const Loading());
-    final List<String> data = await _imgkUseCase.getImgs(query, page, perPage);
+    try {
+      final List<String> data = await _imgUseCase.getImgs(query, page, perPage);
 
-    if (data.isEmpty) {
-      var t;
-      emit(Error(msg: t.task.noImgs));
-      return;
+      if (data.isEmpty) {
+        emit(const Error(msg: 'Изображения не найдены'));
+        return;
+      }
+
+      emit(Data(data: data));
+    } catch (e) {
+      emit(Error(msg: 'Произошла ошибка: $e'));
     }
-
-    emit(Data(data: data));
   }
 
   Future<void> reset() async {
@@ -27,12 +30,20 @@ class ImgBloc extends Cubit<ImgState> {
   }
 
   Future<void> addImgs(String taskId, List<String> imgUrls) async {
-    _imgkUseCase.addImgs(taskId, imgUrls);
-    _taskBloc.refresh(taskId);
+    try {
+      await _imgUseCase.addImgs(taskId, imgUrls);
+      _taskBloc.refresh(taskId);
+    } catch (e) {
+      emit(Error(msg: 'Не удалось добавить изображения: $e'));
+    }
   }
 
   Future<void> removeImg(String taskId, String imgId) async {
-    _imgkUseCase.removeImg(imgId);
-    _taskBloc.refresh(taskId);
+    try {
+      await _imgUseCase.removeImg(imgId);
+      _taskBloc.refresh(taskId);
+    } catch (e) {
+      emit(Error(msg: 'Не удалось удалить изображение: $e'));
+    }
   }
 }

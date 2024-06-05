@@ -20,12 +20,25 @@ class _ImgWidgetState extends ConsumerState<ImgWidget> {
   late final GlobalKey<FormState> perPageKey;
   late final GlobalKey<FormState> pageKey;
 
-  final TextEditingController searchController = TextEditingController();
-  final TextEditingController perPageController =
-      TextEditingController(text: "20");
-  final TextEditingController pageController = TextEditingController(text: "1");
+  late final TextEditingController searchController;
+  late final TextEditingController perPageController;
+  late final TextEditingController pageController;
 
-  final List<String> selectedImgs = [];
+  late final List<String> selectedImgs;
+
+  @override
+  void initState() {
+    super.initState();
+    searchKey = GlobalKey<FormState>();
+    perPageKey = GlobalKey<FormState>();
+    pageKey = GlobalKey<FormState>();
+
+    searchController = TextEditingController();
+    perPageController = TextEditingController(text: "20");
+    pageController = TextEditingController(text: "1");
+
+    selectedImgs = [];
+  }
 
   @override
   void dispose() {
@@ -36,27 +49,13 @@ class _ImgWidgetState extends ConsumerState<ImgWidget> {
   }
 
   @override
-  void initState() {
-    searchKey = GlobalKey<FormState>();
-    perPageKey = GlobalKey<FormState>();
-    pageKey = GlobalKey<FormState>();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final bloc = ref.watch(imgBlocProvider);
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
-      // ignore: deprecated_member_use
       child: WillPopScope(
         onWillPop: () async {
-          Future.delayed(
-            const Duration(milliseconds: 300),
-            () {
-              bloc.reset();
-            },
-          );
+          bloc.reset();
           return true;
         },
         child: Padding(
@@ -83,7 +82,7 @@ class _ImgWidgetState extends ConsumerState<ImgWidget> {
                 pageController: pageController,
                 task: widget.task,
                 selectedImgs: selectedImgs,
-              )
+              ),
             ],
           ),
         ),
